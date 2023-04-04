@@ -20,17 +20,17 @@ const addBoughtProduct = async (req, res) => {
   res.status(200).send(newBoughtProduct);
 };
 
-const filteredBoughtProducts = async (req, res) => {
+const getUserProducts = async (req, res) => {
   const userId = req.params.id;
-  const boughtProducts = await prisma.boughtProducts.findMany({
+  const userProducts = await prisma.boughtProducts.findMany({
     where: { userId: Number(userId) },
   });
 
-  res.status(200).send(boughtProducts);
+  res.status(200).send(userProducts);
 };
 
 module.exports = {
   getBoughtProducts,
   addBoughtProduct,
-  filteredBoughtProducts,
+  getUserProducts,
 };
