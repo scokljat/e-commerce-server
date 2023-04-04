@@ -6,8 +6,21 @@ const { validateLogin, validateRegister } = require("../validator/validator");
 const prisma = new PrismaClient();
 
 const getUsers = async (req, res) => {
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany({
+    include: { boughtProducts: true },
+  });
   res.status(200).send(users);
+};
+
+const getUserById = async (req, res) => {
+  const id = req.params.id;
+
+  const user = await prisma.user.findUnique({
+    where: { id: Number(id) },
+    include: { boughtProducts: true },
+  });
+
+  res.status(200).send(user);
 };
 
 const registerUser = async (req, res) => {
@@ -52,4 +65,4 @@ const loginUser = async (req, res) => {
   res.header("auth-token", token).status(200).send(token);
 };
 
-module.exports = { getUsers, registerUser, loginUser };
+module.exports = { getUsers, registerUser, loginUser, getUserById };
