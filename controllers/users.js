@@ -1,68 +1,90 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("@prisma/client");
+const UsersService = require("../services/users");
 const { validateLogin, validateRegister } = require("../validator/validator");
 
-const prisma = new PrismaClient();
-
 const getUsers = async (req, res) => {
-  const users = await prisma.user.findMany({
-    include: { boughtProducts: true },
-  });
-  res.status(200).send(users);
+  try {
+    const users = await UsersService.findAll({
+      include: { boughtProducts: true },
+    });
+
+    res.status(200).send(users);
+  } catch (error) {}
 };
 
 const getUserById = async (req, res) => {
-  const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-  const user = await prisma.user.findUnique({
-    where: { id: Number(id) },
-    include: { boughtProducts: true },
-  });
+    const user = await UsersService.findUser({
+      where: { id: Number(id) },
+      include: { boughtProducts: true },
+    });
 
-  res.status(200).send(user);
+    res.status(200).send(user);
+  } catch (error) {}
 };
 
 const registerUser = async (req, res) => {
-  const { error } = validateRegister(req.body);
+  try {
+    const { error } = validateRegister(req.body);
 
-  if (error) {
-    return res.send(error.details.map((item) => item.message));
-  }
-  const emailExist = await prisma.user.findUnique({
-    where: { email: req.body.email },
-  });
+    if (error) {
+      return res.send(error.details.map((item) => item.message));
+    }
+    const emailExist = await UsersService.findUser({
+      where: { email: req.body.email },
+    });
 
-  if (emailExist) return res.status(400).send("Email already exists");
+    if (emailExist) return res.status(400).send("Email already exists");
 
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-  const newUser = await prisma.user.create({
-    data: { ...req.body, password: hashedPassword },
-  });
+    const args = {
+      data: { ...req.body, password: hashedPassword },
+    };
+    const newUser = await UsersService.addUser(args);
 
-  const token = jwt.sign({ id: newUser.id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).status(200).send(token);
+    const token = jwt.sign({ id: newUser.id }, process.env.TOKEN_SECRET);
+    res.header("auth-token", token).status(200).send(token);
+  } catch (error) {}
 };
 
 const loginUser = async (req, res) => {
-  const { error } = validateLogin(req.body);
+  try {
+    const { error } = validateLogin(req.body);
 
-  if (error) {
-    return res.send(error.details.map((item) => item.message));
-  }
-  const user = await prisma.user.findUnique({
-    where: { email: req.body.email },
-  });
+    if (error) {
+      return res.send(error.details.map((item) => item.message));
+    }
 
-  if (!user) return res.status(400).send("Email is not found");
+    const user = await UsersService.findUser({
+      where: { email: req.body.email },
+    });
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!user) return res.status(400).send("Email is not found");
 
-  if (!validPassword) return res.status(400).send("Invalid password");
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
 
-  const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).status(200).send(token);
+    if (!validPassword) return res.status(400).send("Invalid password");
+
+    const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET);
+    res.header("auth-token", token).status(200).send(token);
+  } catch (error) {}
 };
 
-module.exports = { getUsers, registerUser, loginUser, getUserById };
+const editUser = async (req, res) => {
+  try {
+    const updatedUser = await UsersService.editUser({
+      where: { id: Number(req.body.id) },
+      data: { ...req.body },
+    });
+    return res.status(200).send(updatedUser);
+  } catch (error) {}
+};
+
+module.exports = { getUsers, registerUser, loginUser, getUserById, editUser };

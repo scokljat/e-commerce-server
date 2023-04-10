@@ -1,30 +1,38 @@
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const ProductsService = require("../services/products");
 
 const getProducts = async (req, res) => {
-  const products = await prisma.products.findMany();
-  res.status(200).send(products);
+  try {
+    const products = await ProductsService.findAll();
+
+    res.status(200).send(products);
+  } catch (error) {}
 };
 
 const getPaginatedProducts = async (req, res) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-  const products = await prisma.products.findMany();
-  const paginatedProducts = products.slice(startIndex, endIndex);
-  res.status(200).send(paginatedProducts);
+  try {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const products = await ProductsService.findAll();
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    res.status(200).send(paginatedProducts);
+  } catch (error) {}
 };
 
 const getFilteredProducts = async (req, res) => {
-  const category = req.query.category;
-  const products = await prisma.products.findMany();
-  const filteredProducts = products.filter(
-    (product) => product.category === category
-  );
+  try {
+    const category = req.query.category;
 
-  res.status(200).send(filteredProducts);
+    const products = await ProductsService.findAll();
+    const filteredProducts = products.filter(
+      (product) => product.category === category
+    );
+
+    res.status(200).send(filteredProducts);
+  } catch (error) {}
 };
 
 module.exports = { getProducts, getPaginatedProducts, getFilteredProducts };
