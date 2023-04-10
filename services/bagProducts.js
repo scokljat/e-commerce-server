@@ -3,10 +3,8 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const BagProductsService = {
-  findAll: async () => {
-    const bagProducts = await prisma.bagProducts.findMany({
-      include: { user: true, product: true },
-    });
+  findAll: async (options) => {
+    const bagProducts = await prisma.bagProducts.findMany(options);
 
     return bagProducts;
   },

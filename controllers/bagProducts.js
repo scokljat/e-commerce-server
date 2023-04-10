@@ -2,7 +2,9 @@ const BagProductsService = require("../services/bagProducts");
 
 const getBagProducts = async (req, res) => {
   try {
-    const bagProducts = await BagProductsService.findAll();
+    const bagProducts = await BagProductsService.findAll({
+      include: { user: true, product: true },
+    });
 
     res.status(200).send(bagProducts);
   } catch (error) {}
