@@ -17,8 +17,8 @@ model User {
   firstName String
   lastName  String
   password  String
-  image     String  @default("https://pics.freeicons.io/uploads/icons/png/9311412861606062171-512.png")
-  boughtProducts  BoughtProducts[]
+  image     String  @default("https://img.freepik.com/premium-vector/person-avatar-design_24877-38130.jpg?w=2000")
+  bagProducts  BagProducts[]
 }
 
 model Products {
@@ -28,10 +28,10 @@ model Products {
   image String
   description String
   price String
- boughtProducts  BoughtProducts[]
+ bagProducts  BagProducts[]
 }
 
-model BoughtProducts{
+model BagProducts{
    id     Int  @id @default(autoincrement())
   product   Products @relation(fields: [productId], references: [id])
   productId Int

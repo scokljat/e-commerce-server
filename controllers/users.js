@@ -6,7 +6,7 @@ const { validateLogin, validateRegister } = require("../validator/validator");
 const getUsers = async (req, res) => {
   try {
     const users = await UsersService.findAll({
-      include: { boughtProducts: true },
+      include: { bagProducts: true },
     });
 
     res.status(200).send(users);
@@ -19,7 +19,7 @@ const getUserById = async (req, res) => {
 
     const user = await UsersService.findUser({
       where: { id: Number(id) },
-      include: { boughtProducts: true },
+      include: { bagProducts: true },
     });
 
     res.status(200).send(user);
