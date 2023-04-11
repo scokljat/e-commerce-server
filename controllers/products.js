@@ -35,4 +35,21 @@ const getFilteredProducts = async (req, res) => {
   } catch (error) {}
 };
 
-module.exports = { getProducts, getPaginatedProducts, getFilteredProducts };
+const getProductById = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const product = await ProductsService.findProduct({
+      where: { id: Number(id) },
+    });
+
+    res.status(200).send(product);
+  } catch (error) {}
+};
+
+module.exports = {
+  getProducts,
+  getPaginatedProducts,
+  getFilteredProducts,
+  getProductById,
+};

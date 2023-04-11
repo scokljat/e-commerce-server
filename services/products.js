@@ -8,6 +8,11 @@ const ProductsService = {
 
     return products;
   },
+  findProduct: async (options) => {
+    const product = await prisma.products.findUnique(options);
+
+    return product;
+  },
 };
 
 module.exports = ProductsService;
