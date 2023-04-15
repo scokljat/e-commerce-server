@@ -23,6 +23,11 @@ const UsersService = {
 
     return editedUser;
   },
+  editUserPassword: async (values) => {
+    const editedUser = prisma.user.update(values);
+
+    return editedUser;
+  },
 };
 
 module.exports = UsersService;

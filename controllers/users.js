@@ -87,4 +87,41 @@ const editUser = async (req, res) => {
   } catch (error) {}
 };
 
-module.exports = { getUsers, registerUser, loginUser, getUserById, editUser };
+const editUserPassword = async (req, res) => {
+  try {
+    const user = await UsersService.findUser({
+      where: { id: Number(req.body.id) },
+    });
+
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!validPassword) return res.status(400).send("Invalid password");
+
+    if (req.body.password === req.body.newPassword)
+      return res.status(400).send("You have entered the current password");
+
+    if (req.body.newPassword !== req.body.confirmedPassword)
+      return res.status(400).send("Invalid new password");
+
+    const hashedNewPassword = await bcrypt.hash(req.body.newPassword, 10);
+
+    const editedUser = await UsersService.editUserPassword({
+      where: { id: Number(req.body.id) },
+      data: { password: hashedNewPassword },
+    });
+
+    return res.status(200).send(editedUser);
+  } catch (error) {}
+};
+
+module.exports = {
+  getUsers,
+  registerUser,
+  loginUser,
+  getUserById,
+  editUser,
+  editUserPassword,
+};
