@@ -50,9 +50,22 @@ const deleteUserProduct = async (req, res) => {
   } catch (error) {}
 };
 
+const deleteAllUserProducts = async (req, res) => {
+  try {
+    const id = req.body.userId;
+
+    await BagProductsService.deleteAllUserProducts({
+      where: { userId: Number(id) },
+    });
+
+    res.status(200).send("Bag is empty");
+  } catch (error) {}
+};
+
 module.exports = {
   getBagProducts,
   addProductToBag,
   getUserProducts,
   deleteUserProduct,
+  deleteAllUserProducts,
 };
