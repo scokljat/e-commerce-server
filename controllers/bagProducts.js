@@ -1,5 +1,8 @@
 const BagProductsService = require("../services/bagProducts");
 
+const stripe = require("stripe")(process.env.SECRET_KEY);
+const { v4: uuidv4 } = require("uuid");
+
 const getBagProducts = async (req, res) => {
   try {
     const bagProducts = await BagProductsService.findAll({
@@ -104,6 +107,39 @@ const decreaseProductInBag = async (req, res) => {
     res.status(200).send(editedProduct);
   } catch (error) {}
 };
+
+const payProducts = async (req, res) => {
+  const { product, token } = req.body;
+
+  const idempotencyKey = uuidv4();
+
+  return stripe.customers
+    .create({
+      email: token.email,
+      source: token.id,
+    })
+    .then((customer) => {
+      stripe.charges.create(
+        {
+          amount: Math.round(product.price * 100),
+          currency: "usd",
+          customer: customer.id,
+          receipt_email: token.email,
+          description: product.name,
+          shipping: {
+            name: token.card.name,
+            address: {
+              country: token.card.address_country,
+            },
+          },
+        },
+        { idempotencyKey }
+      );
+    })
+    .then((result) => res.status(200).json(result))
+    .catch((err) => console.log(err));
+};
+
 module.exports = {
   getBagProducts,
   addProductToBag,
@@ -112,4 +148,5 @@ module.exports = {
   deleteAllUserProducts,
   increaseProductInBag,
   decreaseProductInBag,
+  payProducts,
 };
