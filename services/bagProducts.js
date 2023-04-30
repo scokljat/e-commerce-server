@@ -26,6 +26,16 @@ const BagProductsService = {
   deleteAllUserProducts: async (options) => {
     return await prisma.bagProducts.deleteMany(options);
   },
+  findUserProduct: async (options) => {
+    const product = await prisma.bagProducts.findFirst(options);
+
+    return product;
+  },
+  editUserProduct: async (values) => {
+    const editedProduct = await prisma.bagProducts.update(values);
+
+    return editedProduct;
+  },
 };
 
 module.exports = BagProductsService;

@@ -17,6 +17,7 @@ const addProductToBag = async (req, res) => {
         product: { connect: { id: req.body.productId } },
         user: { connect: { id: req.body.userId } },
         size: req.body.size,
+        quantity: 1,
       },
     };
 
@@ -62,10 +63,53 @@ const deleteAllUserProducts = async (req, res) => {
   } catch (error) {}
 };
 
+const increaseProductInBag = async (req, res) => {
+  try {
+    const product = await BagProductsService.findUserProduct({
+      where: {
+        userId: Number(req.body.userId),
+        productId: Number(req.body.productId),
+        size: req.body.size,
+      },
+    });
+
+    const editedProduct = await BagProductsService.editUserProduct({
+      where: {
+        id: Number(product.id),
+      },
+      data: { ...req.body, quantity: product.quantity + 1 },
+    });
+
+    res.status(200).send(editedProduct);
+  } catch (error) {}
+};
+
+const decreaseProductInBag = async (req, res) => {
+  try {
+    const product = await BagProductsService.findUserProduct({
+      where: {
+        userId: Number(req.body.userId),
+        productId: Number(req.body.productId),
+        size: req.body.size,
+      },
+    });
+
+    const editedProduct = await BagProductsService.editUserProduct({
+      where: {
+        id: Number(product.id),
+      },
+      data: { ...req.body, quantity: product.quantity - 1 },
+    });
+
+    res.status(200).send(editedProduct);
+  } catch (error) {}
+};
 module.exports = {
   getBagProducts,
   addProductToBag,
   getUserProducts,
   deleteUserProduct,
   deleteAllUserProducts,
+  increaseProductInBag,
+  decreaseProductInBag,
 };
