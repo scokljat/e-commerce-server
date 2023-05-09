@@ -35,6 +35,22 @@ const getFilteredProducts = async (req, res) => {
   } catch (error) {}
 };
 
+const getSearchedProducts = async (req, res) => {
+  try {
+    const search = req.query.search;
+    const searchedProducts = await ProductsService.searchProducts({
+      where: {
+        name: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    res.status(200).send(searchedProducts);
+  } catch (error) {}
+};
+
 const getProductById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -51,5 +67,6 @@ module.exports = {
   getProducts,
   getPaginatedProducts,
   getFilteredProducts,
+  getSearchedProducts,
   getProductById,
 };

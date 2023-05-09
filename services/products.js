@@ -13,6 +13,11 @@ const ProductsService = {
 
     return product;
   },
+  searchProducts: async (options) => {
+    const products = await prisma.products.findMany(options);
+
+    return products;
+  },
 };
 
 module.exports = ProductsService;
