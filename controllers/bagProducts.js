@@ -76,14 +76,20 @@ const increaseProductInBag = async (req, res) => {
       },
     });
 
-    const editedProduct = await BagProductsService.editUserProduct({
-      where: {
-        id: Number(product.id),
-      },
-      data: { ...req.body, quantity: product.quantity + 1 },
-    });
+    if (product.quantity === 10) {
+      res
+        .status(200)
+        .send("The maximum number of this product is 10 in the bag.");
+    } else {
+      const editedProduct = await BagProductsService.editUserProduct({
+        where: {
+          id: Number(product.id),
+        },
+        data: { ...req.body, quantity: product.quantity + 1 },
+      });
 
-    res.status(200).send(editedProduct);
+      res.status(200).send(editedProduct);
+    }
   } catch (error) {}
 };
 
@@ -97,14 +103,20 @@ const decreaseProductInBag = async (req, res) => {
       },
     });
 
-    const editedProduct = await BagProductsService.editUserProduct({
-      where: {
-        id: Number(product.id),
-      },
-      data: { ...req.body, quantity: product.quantity - 1 },
-    });
+    if (product.quantity === 1) {
+      res
+        .status(200)
+        .send("The minimum number of this product is 1 in the bag.");
+    } else {
+      const editedProduct = await BagProductsService.editUserProduct({
+        where: {
+          id: Number(product.id),
+        },
+        data: { ...req.body, quantity: product.quantity - 1 },
+      });
 
-    res.status(200).send(editedProduct);
+      res.status(200).send(editedProduct);
+    }
   } catch (error) {}
 };
 
