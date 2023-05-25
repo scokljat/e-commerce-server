@@ -20,7 +20,7 @@ git clone https://github.com/scokljat/e-commerce-server
 Add .env file
 
 ```
- DATABASE_URL = "postgresql://postgres:password@localhost:5000/ecommerce?schema=ecommerce"
+ DATABASE_URL = "postgresql://username:password@localhost:5000/ecommerce?schema=ecommerce"
  PORT=PORT
  TOKEN_SECRET=password
 ```
